@@ -1,0 +1,89 @@
+﻿@model MathaCapital.Models.BidBatchViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container">
+    <h2>Auction Bids</h2>
+
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Create New</a>
+    </p>
+    <div class="container">
+        <form asp-controller="Bids" asp-action="Index" class="form-inline">
+            <label for="batch" class="form-inline">Batch Reference:</label>
+            <select class="form-control" asp-for="bidBatch" asp-items="Model.batches">
+                <option value="">All</option>
+            </select>
+            <label for="date" class="form-inline">Date:</label>
+            <input type="date" name="fwdDate" max="3000-12-31"
+                   min="1000-01-01" class="form-control">
+            <label for="search" class="form-inline">Bank:</label>
+            <input type="text" name="searchString" class="form-control" id="search" placeholder="Type Bank Name Here.." />
+
+
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.bids[0].FwdDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.bids[0].BankName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.bids[0].FwdRate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.bids[0].AmountBid)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.bids[0].CouponAmount)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.bids[0].Pips)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.bids[0].BatchRef)
+                </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.bids) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FwdDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BankName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FwdRate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AmountBid)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CouponAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Pips)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BatchRef)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

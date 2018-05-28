@@ -1,0 +1,60 @@
+﻿@model MathaCapital.Models.AuctionBid
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>AuctionBid</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.FwdDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FwdDate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BankName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BankName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FwdRate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FwdRate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AmountBid)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AmountBid)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CouponAmount)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CouponAmount)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Pips)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Pips)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BatchRef)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BatchRef)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
