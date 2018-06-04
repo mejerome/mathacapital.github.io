@@ -6,12 +6,11 @@ using MathaCapital.Data;
 using MathaCapital.Models;
 using Microsoft.AspNetCore.Hosting;
 using System.Collections.Generic;
-using System.IO;
-using OfficeOpenXml;
 using System;
-using Microsoft.AspNetCore.Http;
-using System.Text;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Data;
+using MoreLinq;
+using System.Data.SqlClient;
 
 namespace MathaCapital.Controllers
 {
@@ -31,9 +30,41 @@ namespace MathaCapital.Controllers
         }
 
 
+        public static DataTable ReadBidData(string commandText)
+        {
+            string connectionString = "Server=JEROME-SBOOK\\SQLEXPRESS;Database=MathaRx;Trusted_Connection=True;MultipleActiveResultSets=true; Integrated Security=true;";
+            var dataTable = new DataTable();
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using (SqlCommand comm = new SqlCommand(commandText, conn))
+                {
+                    conn.Open();
+                    using (SqlDataReader reader = comm.ExecuteReader())
+                    {
+                        dataTable.Load(reader);
+                    }
+                    conn.Close();
+                }
+            }
+            return dataTable;
+        }
+
+
+        public IActionResult RunAuction(string bidBatch)
+        {
+
+
+
+            string sqlQuery = "select * from AuctionBid where BatchRef='20180531102412'";
+            DataTable table = ReadBidData(sqlQuery);
+
+
+            return View();
+        }
+
 
         // GET: Bids
-        public async Task<IActionResult> Index(string bidBatch, string searchString, string fwdDate)
+        public async Task<IActionResult> Index(string searchString, string fwdDate, string bidBatch = "20180531102412")
         {
 
             IQueryable<string> batchQuery = from b in _context.AuctionBids
@@ -58,7 +89,7 @@ namespace MathaCapital.Controllers
             }
             var bidVM = new BidBatchViewModel();
             bidVM.batches = new SelectList(await batchQuery.Distinct().ToListAsync());
-            bidVM.bids = await bids.OrderBy(b=>b.FwdDate).ToListAsync();
+            bidVM.bids = await bids.OrderBy(b => b.FwdDate).ThenByDescending(b => b.FwdRate).ToListAsync();
             return View(bidVM);
         }
 
@@ -186,6 +217,9 @@ namespace MathaCapital.Controllers
         {
             return _context.AuctionBids.Any(e => e.ID == id);
         }
+
+
+
 
     }
 

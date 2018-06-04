@@ -14,10 +14,14 @@ namespace MathaCapital.Data
 
         }
         public DbSet<AuctionBid> AuctionBids { get; set; }
+        public DbSet<WinResults> WinResults { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AuctionBid>().ToTable("AuctionBid");
+            modelBuilder.Entity<WinResults>().ToTable("WinResult");
         }
+
+
     }
 }

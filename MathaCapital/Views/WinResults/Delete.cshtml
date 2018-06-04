@@ -1,0 +1,63 @@
+﻿@model MathaCapital.Models.WinResults
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>WinResults</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.FwdDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FwdDate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BankName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BankName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FwdRate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FwdRate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AmountBid)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AmountBid)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CouponAmount)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CouponAmount)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.WinAmount)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.WinAmount)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AuctionBid)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AuctionBid.ID)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="ID" />
+        <input type="submit" value="Delete" class="btn btn-default" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>

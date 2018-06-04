@@ -1,0 +1,71 @@
+﻿@model IEnumerable<MathaCapital.Models.WinResults>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.FwdDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BankName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FwdRate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AmountBid)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CouponAmount)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.WinAmount)
+                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AuctionBid)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FwdDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BankName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FwdRate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AmountBid)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CouponAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WinAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AuctionBid.ID)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

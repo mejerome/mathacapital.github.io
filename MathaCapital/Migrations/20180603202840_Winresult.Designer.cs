@@ -11,9 +11,10 @@ using System;
 namespace MathaCapital.Migrations
 {
     [DbContext(typeof(AuctionContext))]
-    partial class AuctionContextModelSnapshot : ModelSnapshot
+    [Migration("20180603202840_Winresult")]
+    partial class Winresult
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,40 +43,6 @@ namespace MathaCapital.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("AuctionBid");
-                });
-
-            modelBuilder.Entity("MathaCapital.Models.WinResults", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<decimal>("AmountBid");
-
-                    b.Property<int>("AuctionBidID");
-
-                    b.Property<string>("BankName");
-
-                    b.Property<decimal>("CouponAmount");
-
-                    b.Property<DateTime>("FwdDate");
-
-                    b.Property<double>("FwdRate");
-
-                    b.Property<decimal>("WinAmount");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("AuctionBidID");
-
-                    b.ToTable("WinResult");
-                });
-
-            modelBuilder.Entity("MathaCapital.Models.WinResults", b =>
-                {
-                    b.HasOne("MathaCapital.Models.AuctionBid", "AuctionBid")
-                        .WithMany()
-                        .HasForeignKey("AuctionBidID")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }
