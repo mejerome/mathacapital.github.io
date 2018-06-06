@@ -24,7 +24,8 @@ namespace MathaCapital
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AuctionContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            //services.AddDbContext<AuctionContext>();
             services.AddSingleton<IConfiguration>(Configuration);
 
             services.AddMvc();

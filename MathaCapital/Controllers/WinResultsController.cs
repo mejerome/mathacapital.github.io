@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MathaCapital.Data;
 using MathaCapital.Models;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace MathaCapital.Controllers
 {
@@ -19,12 +21,97 @@ namespace MathaCapital.Controllers
             _context = context;
         }
 
-        // GET: WinResults
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> RunAuction(string bidBatch)
         {
-            var auctionContext = _context.WinResults.Include(w => w.AuctionBid);
-            return View(await auctionContext.ToListAsync());
+
+            List<DateTime> res = (from a in _context.AuctionBids
+                                  where a.BatchRef.ToString() == bidBatch
+                                  orderby a.FwdDate
+                                  select a.FwdDate).Distinct().ToList();
+
+
+            foreach (var date in res)
+            {
+
+                string connectionString = "Server=JEROME-SBOOK\\SQLEXPRESS;Database=MathaRx;Trusted_Connection=True;MultipleActiveResultSets=true; Integrated Security=true;";
+                string sqlQry = "select ID, FwdDate, CouponAmount, BankName, AmountBid, FwdRate, BatchRef, case when remainder < 0 then remainder_1 else " +
+                    "AmountBid end awarded_amount from (select *, LAG(remainder) over(order by FwdRate desc) remainder_1 " +
+                    "from (select ID, FwdDate, CouponAmount, BankName, AmountBid, FwdRate, BatchRef, SUM(AmountBid) over (order by FwdRate desc) rtotal, " +
+                    "CouponAmount - SUM(AmountBid) over (order by FwdRate desc) as remainder from AuctionBid where FwdDate=@fwdDate and BatchRef=@batchRef) tb) a where case when remainder < 0 then remainder_1 else AmountBid end >= 0";
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand comm = new SqlCommand(null, conn))
+                    {
+                        conn.Open();
+                        comm.CommandText = sqlQry;
+                        SqlParameter param1 = comm.Parameters.Add("@fwdDate", SqlDbType.DateTime2, 8);
+                        SqlParameter param2 = comm.Parameters.Add("@batchRef", SqlDbType.NVarChar, 100);
+
+                        param1.Value = date;
+                        param2.Value = bidBatch;
+
+                        comm.Prepare();
+                        SqlDataReader reader = comm.ExecuteReader();
+                        DataTable dt = new DataTable();
+
+                        dt.Load(reader);
+                        conn.Close();
+                       
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            WinResults convertedObject = ConvertRowToWinResult(row);
+                            _context.WinResults.Add(convertedObject);
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+
+                }
+            }
+
+            return RedirectToAction("Index", "WinResults");
+
         }
+
+        public WinResults ConvertRowToWinResult(DataRow dr)
+        {
+            WinResults winResult = new WinResults();
+
+            winResult.AuctionBidID = Convert.ToInt16(dr["ID"]);
+            winResult.FwdDate = Convert.ToDateTime(dr["FwdDate"]);
+            winResult.CouponAmount = Convert.ToDecimal(dr["CouponAmount"]);
+            winResult.BankName = Convert.ToString(dr["BankName"]);
+            winResult.AmountBid = Convert.ToDecimal(dr["AmountBid"]);
+            winResult.FwdRate = Convert.ToDouble(dr["FwdRate"]);
+            winResult.WinAmount = Convert.ToDecimal(dr["awarded_amount"]);
+            winResult.BatchRef = Convert.ToString(dr["BatchRef"]);
+
+            return winResult;
+        }
+
+
+
+        // GET: WinResults
+        public async Task<IActionResult> Index(string bidBatch)
+        {
+            IQueryable<string> batchQuery = from b in _context.AuctionBids
+                                            orderby b.BatchRef
+                                            select b.BatchRef;
+
+            var bids = from m in _context.WinResults
+                       select m;
+
+            if (!String.IsNullOrEmpty(bidBatch))
+            {
+                bids = bids.Where(x => x.BatchRef == bidBatch);
+            }
+
+            var bidVM = new BidBatchViewModel();
+            bidVM.batches = new SelectList(await batchQuery.Distinct().ToListAsync());
+            bidVM.wins = await bids.OrderBy(b => b.FwdDate).ThenByDescending(b => b.FwdRate).ToListAsync();
+            return View(bidVM);
+        }
+
+
 
         // GET: WinResults/Details/5
         public async Task<IActionResult> Details(int? id)

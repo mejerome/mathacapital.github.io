@@ -29,6 +29,9 @@ namespace MathaCapital.Models
 
         [Display(Name = "Win Amount")]
         public decimal WinAmount { get; set; }
+
+        public string BatchRef { get; set; }
+
     }
 
 }

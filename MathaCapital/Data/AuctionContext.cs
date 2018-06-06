@@ -1,9 +1,5 @@
 ﻿using MathaCapital.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MathaCapital.Data
 {
@@ -13,6 +9,7 @@ namespace MathaCapital.Data
         {
 
         }
+
         public DbSet<AuctionBid> AuctionBids { get; set; }
         public DbSet<WinResults> WinResults { get; set; }
 
@@ -23,5 +20,6 @@ namespace MathaCapital.Data
         }
 
 
-    }
+     }
+
 }

@@ -11,9 +11,10 @@ using System;
 namespace MathaCapital.Migrations
 {
     [DbContext(typeof(AuctionContext))]
-    partial class AuctionContextModelSnapshot : ModelSnapshot
+    [Migration("20180606172609_batchref2win")]
+    partial class batchref2win
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

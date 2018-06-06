@@ -10,6 +10,7 @@ namespace MathaCapital.Models
     {
         public List<AuctionBid> bids;
         public SelectList batches;
+        public List<WinResults> wins;
         public string bidBatch { get; set; }
 
     }

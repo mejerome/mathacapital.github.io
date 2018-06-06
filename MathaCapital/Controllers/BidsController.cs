@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Data;
 using MoreLinq;
 using System.Data.SqlClient;
+using System.Globalization;
 
 namespace MathaCapital.Controllers
 {
@@ -24,47 +25,16 @@ namespace MathaCapital.Controllers
             _context = db;
         }
 
+        
         protected override void Dispose(bool disposing)
         {
             _context.Dispose();
         }
+        
 
 
-        public static DataTable ReadBidData(string commandText)
-        {
-            string connectionString = "Server=JEROME-SBOOK\\SQLEXPRESS;Database=MathaRx;Trusted_Connection=True;MultipleActiveResultSets=true; Integrated Security=true;";
-            var dataTable = new DataTable();
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                using (SqlCommand comm = new SqlCommand(commandText, conn))
-                {
-                    conn.Open();
-                    using (SqlDataReader reader = comm.ExecuteReader())
-                    {
-                        dataTable.Load(reader);
-                    }
-                    conn.Close();
-                }
-            }
-            return dataTable;
-        }
-
-
-        public IActionResult RunAuction(string bidBatch)
-        {
-
-
-
-            string sqlQuery = "select * from AuctionBid where BatchRef='20180531102412'";
-            DataTable table = ReadBidData(sqlQuery);
-
-
-            return View();
-        }
-
-
-        // GET: Bids
-        public async Task<IActionResult> Index(string searchString, string fwdDate, string bidBatch = "20180531102412")
+            // GET: Bids
+            public async Task<IActionResult> Index(string searchString, string fwdDate, string bidBatch = "20180531102412")
         {
 
             IQueryable<string> batchQuery = from b in _context.AuctionBids

@@ -1,71 +1,87 @@
-﻿@model IEnumerable<MathaCapital.Models.WinResults>
-
+﻿@model MathaCapital.Models.BidBatchViewModel
 @{
     ViewData["Title"] = "Index";
 }
 
 <h2>Index</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<div class="container">
+    <form asp-controller="WinResults" asp-action="Index" class="form-inline">
+        <label for="batch" class="form-inline">Batch Reference:</label>
+        <select class="form-control" asp-for="bidBatch" asp-items="Model.batches">
+            <option value="">All</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">Search</button>
+        <button asp-action="RunAuction" class="btn btn-primary">Run Auction</button>
+
+    </form>
+</div>
+
+
 <table class="table">
     <thead>
         <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.FwdDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.BankName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.FwdRate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.AmountBid)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CouponAmount)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.WinAmount)
-                </th>
             <th>
-                @Html.DisplayNameFor(model => model.AuctionBid)
+                @Html.DisplayNameFor(model => model.wins[0].FwdDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.wins[0].BankName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.wins[0].FwdRate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.wins[0].AmountBid)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.wins[0].CouponAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.wins[0].WinAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.wins[0].BatchRef)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.wins[0].AuctionBidID)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FwdDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BankName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FwdRate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AmountBid)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CouponAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.WinAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AuctionBid.ID)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.wins)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FwdDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BankName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FwdRate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AmountBid)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CouponAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WinAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BatchRef)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AuctionBid.ID)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">Details</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
