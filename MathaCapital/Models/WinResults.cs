@@ -22,12 +22,15 @@ namespace MathaCapital.Models
         public double FwdRate { get; set; }
 
         [Display(Name = "Amount Bid")]
+        [DisplayFormat(DataFormatString = "{0:0,0.00}")]
         public decimal AmountBid { get; set; }
 
         [Display(Name = "Coupon Amount")]
+        [DisplayFormat(DataFormatString = "{0:0,0.00}")]
         public decimal CouponAmount { get; set; }
 
         [Display(Name = "Win Amount")]
+        [DisplayFormat(DataFormatString = "{0:0,0.00}")]
         public decimal WinAmount { get; set; }
 
         public string BatchRef { get; set; }

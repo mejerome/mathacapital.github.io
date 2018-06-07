@@ -21,18 +21,24 @@ namespace MathaCapital.Controllers
             _context = context;
         }
 
+        // Run Auction for a Batch
         public async Task<IActionResult> RunAuction(string bidBatch)
         {
-
+            //Get a list of dates in this Batch
             List<DateTime> res = (from a in _context.AuctionBids
                                   where a.BatchRef.ToString() == bidBatch
                                   orderby a.FwdDate
                                   select a.FwdDate).Distinct().ToList();
 
+            // Delete wins before running auction again
+            var deleteWins = from w in _context.WinResults
+                             where w.BatchRef.ToString() == bidBatch
+                             select w;
+
 
             foreach (var date in res)
             {
-
+                // Direct SQL to pick winners for a date
                 string connectionString = "Server=JEROME-SBOOK\\SQLEXPRESS;Database=MathaRx;Trusted_Connection=True;MultipleActiveResultSets=true; Integrated Security=true;";
                 string sqlQry = "select ID, FwdDate, CouponAmount, BankName, AmountBid, FwdRate, BatchRef, case when remainder < 0 then remainder_1 else " +
                     "AmountBid end awarded_amount from (select *, LAG(remainder) over(order by FwdRate desc) remainder_1 " +
@@ -56,7 +62,8 @@ namespace MathaCapital.Controllers
 
                         dt.Load(reader);
                         conn.Close();
-                       
+                        
+                        // Convert Date wins to object and write to entity
                         foreach (DataRow row in dt.Rows)
                         {
                             WinResults convertedObject = ConvertRowToWinResult(row);
@@ -71,7 +78,7 @@ namespace MathaCapital.Controllers
             return RedirectToAction("Index", "WinResults");
 
         }
-
+        // Convert DataTable rows to Object
         public WinResults ConvertRowToWinResult(DataRow dr)
         {
             WinResults winResult = new WinResults();

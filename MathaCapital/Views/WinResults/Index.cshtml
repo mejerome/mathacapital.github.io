@@ -3,7 +3,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h2>Index</h2>
+<h2>Win Bids</h2>
 
 <div class="container">
     <form asp-controller="WinResults" asp-action="Index" class="form-inline">
@@ -11,15 +11,15 @@
         <select class="form-control" asp-for="bidBatch" asp-items="Model.batches">
             <option value="">All</option>
         </select>
-
-        <button type="submit" class="btn btn-primary">Search</button>
+        &nbsp;
+        <button type="submit" class="btn btn-primary">Search</button>&nbsp;
         <button asp-action="RunAuction" class="btn btn-primary">Run Auction</button>
 
     </form>
 </div>
 
 
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>
@@ -62,20 +62,20 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.FwdRate)
                 </td>
-                <td>
+                <td class="text-right">
                     @Html.DisplayFor(modelItem => item.AmountBid)
                 </td>
-                <td>
+                <td class="text-right">
                     @Html.DisplayFor(modelItem => item.CouponAmount)
                 </td>
-                <td>
+                <td class="text-right">
                     @Html.DisplayFor(modelItem => item.WinAmount)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.BatchRef)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.AuctionBid.ID)
+                    @Html.DisplayFor(modelItem => item.AuctionBidID)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |

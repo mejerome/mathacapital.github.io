@@ -18,8 +18,10 @@ namespace MathaCapital.Models
         [Display(Name ="Forward Rate")]
         public double FwdRate { get; set; }
         [Display(Name = "Amount Bid")]
+        [DisplayFormat(DataFormatString = "{0:0,0.00}")]
         public decimal AmountBid { get; set; }
         [Display(Name = "Coupon Amount")]
+        [DisplayFormat(DataFormatString = "{0:0,0.00}")]
         public decimal CouponAmount { get; set; }
         public decimal Pips { get; set; }
         public string BatchRef { get; set; }
