@@ -68,8 +68,10 @@
                 <td class="text-right">
                     @Html.DisplayFor(modelItem => item.CouponAmount)
                 </td>
-                <td class="text-right">
-                    @Html.DisplayFor(modelItem => item.WinAmount)
+                <td class="text-right text">
+                    <strong>
+                        @Html.DisplayFor(modelItem => item.WinAmount)
+                    </strong>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.BatchRef)

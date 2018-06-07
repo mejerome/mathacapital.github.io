@@ -31,9 +31,7 @@ namespace MathaCapital.Controllers
                                   select a.FwdDate).Distinct().ToList();
 
             // Delete wins before running auction again
-            var deleteWins = from w in _context.WinResults
-                             where w.BatchRef.ToString() == bidBatch
-                             select w;
+            _context.WinResults.Where(w => w.BatchRef == bidBatch).ToList().ForEach(p => _context.WinResults.Remove(p));
 
 
             foreach (var date in res)
