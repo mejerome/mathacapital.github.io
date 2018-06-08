@@ -31,6 +31,10 @@ namespace MathaCapital.Controllers
         [HttpPost]
         public async Task<ActionResult> UploadExcel(IFormFile file)
         {
+            if (file == null || file.Length < 0)
+            {
+                return Content("file not selected.");
+            }
             string message = string.Empty;
             int count = 0;
             await UploadFile(file);
