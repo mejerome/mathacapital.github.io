@@ -98,6 +98,7 @@ namespace MathaCapital.Controllers
         // GET: WinResults
         public async Task<IActionResult> Index(string bidBatch)
         {
+
             IQueryable<string> batchQuery = from b in _context.AuctionBids
                                             orderby b.BatchRef
                                             select b.BatchRef;

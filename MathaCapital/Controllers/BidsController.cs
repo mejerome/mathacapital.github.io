@@ -34,7 +34,7 @@ namespace MathaCapital.Controllers
 
 
             // GET: Bids
-            public async Task<IActionResult> Index(string searchString, string fwdDate, string bidBatch = "20180531102412")
+            public async Task<IActionResult> Index(string searchString, string fwdDate, string bidBatch)
         {
 
             IQueryable<string> batchQuery = from b in _context.AuctionBids
