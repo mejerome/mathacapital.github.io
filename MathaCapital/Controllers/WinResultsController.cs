@@ -60,12 +60,16 @@ namespace MathaCapital.Controllers
 
                         dt.Load(reader);
                         conn.Close();
-                        
+
                         // Convert Date wins to object and write to entity
                         foreach (DataRow row in dt.Rows)
                         {
                             WinResults convertedObject = ConvertRowToWinResult(row);
-                            _context.WinResults.Add(convertedObject);
+
+                            if (convertedObject.WinAmount != 0)
+                            {
+                                _context.WinResults.Add(convertedObject);
+                            }
                         }
                         await _context.SaveChangesAsync();
                     }
@@ -96,8 +100,9 @@ namespace MathaCapital.Controllers
 
 
         // GET: WinResults
-        public async Task<IActionResult> Index(string bidBatch)
+        public async Task<IActionResult> Index(string bidBatch, string sortOrder)
         {
+
 
             IQueryable<string> batchQuery = from b in _context.AuctionBids
                                             orderby b.BatchRef
@@ -109,11 +114,24 @@ namespace MathaCapital.Controllers
             if (!String.IsNullOrEmpty(bidBatch))
             {
                 bids = bids.Where(x => x.BatchRef == bidBatch);
+
+            }
+            switch (sortOrder)
+            {
+                case "sortByBank":
+                    bids = bids.OrderBy(s => s.BankName).ThenBy(s=>s.FwdDate);
+                    break;
+
+
+                case "sortByDate":
+                    bids = bids.OrderBy(s => s.FwdDate).ThenByDescending(s => s.FwdRate);
+                    break;
+
             }
 
             var bidVM = new BidBatchViewModel();
             bidVM.batches = new SelectList(await batchQuery.Distinct().ToListAsync());
-            bidVM.wins = await bids.OrderBy(b => b.FwdDate).ThenByDescending(b => b.FwdRate).ToListAsync();
+            bidVM.wins = await bids.ToListAsync();
             return View(bidVM);
         }
 

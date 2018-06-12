@@ -12,8 +12,13 @@
             <option value="">All</option>
         </select>
         &nbsp;
+        <label class="form-inline" for="sortby">Sort By:</label>
+        <select class="form-control" asp-for="sortOrder">
+            <option value="sortByDate">Show Results by Dates</option>
+            <option value="sortByBank">Show Results by Bank</option>
+        </select>
         <button type="submit" class="btn btn-primary">Search</button>&nbsp;
-        <button asp-action="RunAuction" class="btn btn-primary">Run Auction</button>
+        <button asp-action="RunAuction" class="btn">Run Auction</button>
 
     </form>
 </div>

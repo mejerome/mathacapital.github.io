@@ -12,8 +12,8 @@ namespace MathaCapital.Models
         public SelectList batches;
         public List<WinResults> wins;
         public string bidBatch { get; set; }
-
-    }
+        public string sortOrder { get; set; }
+            }
 
 
 }
