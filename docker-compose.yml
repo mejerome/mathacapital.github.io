@@ -1,9 +1,0 @@
-version: '3.4'
-
-services:
-  mathacapital:
-    image: ${DOCKER_REGISTRY}mathacapital
-    build:
-      context: .
-      dockerfile: MathaCapital/Dockerfile
-      
