@@ -10,9 +10,11 @@ namespace MathaCapital.Models
     {
         public List<AuctionBid> bids;
         public SelectList batches;
+        public SelectList banks;
         public List<WinResults> wins;
         public string bidBatch { get; set; }
         public string sortOrder { get; set; }
+        public string bankName { get; set; }
             }
 
 

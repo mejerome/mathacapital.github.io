@@ -3,17 +3,8 @@
     ViewData["Title"] = "Index";
 }
 
-<h2>Win Bids</h2>
+<h2>Win Results</h2>
 <div class="container">
-    <div class="form-group">
-        <form asp-controller="WinResults" asp-action="RunAuction" class="form-inline">
-            <label for="batch" class="form-inline">Batch Reference:</label>
-            <select class="form-control" asp-for="bidBatch" asp-items="Model.batches">
-                <option value="">All</option>
-            </select>
-            <button type="submit" class="btn">Run Auction</button>&nbsp;
-        </form>
-    </div>
 
     <div class="form-group">
         <form asp-controller="WinResults" asp-action="Index" class="form-inline">
@@ -22,7 +13,11 @@
                 <option value="">All</option>
             </select>
             &nbsp;
-            <label class="form-inline" for="sortby">Sort By:</label>
+            <label class="form-inline">  Bank Name:</label>
+            <select class="form-control" asp-for="bankName" asp-items="Model.banks">
+                <option value="">All</option>
+            </select>
+            <label class="form-inline" for="sortby">   Sort By:</label>
             <select class="form-control" asp-for="sortOrder">
                 <option value="sortByDate">Show Results by Dates</option>
                 <option value="sortByBank">Show Results by Bank</option>
