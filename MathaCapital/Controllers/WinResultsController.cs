@@ -22,7 +22,7 @@ namespace MathaCapital.Controllers
         }
 
         // Run Auction for a Batch
-        public async Task<IActionResult> RunAuction(string bidBatch)
+        public async Task<IActionResult> RunAuction(string bidBatch) 
         {
             //Get a list of dates in this Batch
             List<DateTime> res = (from a in _context.AuctionBids
@@ -37,7 +37,7 @@ namespace MathaCapital.Controllers
             foreach (var date in res)
             {
                 // Direct SQL to pick winners for a date
-                string connectionString = "Server=JEROME-SBOOK\\SQLEXPRESS;Database=MathaRx;Trusted_Connection=True;MultipleActiveResultSets=true; Integrated Security=true;";
+                string connectionString = "Server=JEROME-SBOOK\\SQLEXPRESS01;Database=MathaRx;Trusted_Connection=True;MultipleActiveResultSets=true;";
                 string sqlQry = "select ID, FwdDate, CouponAmount, BankName, AmountBid, FwdRate, BatchRef, case when remainder < 0 then remainder_1 else " +
                     "AmountBid end awarded_amount from (select *, LAG(remainder) over(order by FwdRate desc) remainder_1 " +
                     "from (select ID, FwdDate, CouponAmount, BankName, AmountBid, FwdRate, BatchRef, SUM(AmountBid) over (order by FwdRate desc) rtotal, " +
