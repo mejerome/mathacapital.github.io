@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MathaCapital.Models
 {
@@ -16,6 +13,4 @@ namespace MathaCapital.Models
         public string sortOrder { get; set; }
         public string bankName { get; set; }
             }
-
-
 }

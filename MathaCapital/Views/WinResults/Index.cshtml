@@ -1,6 +1,6 @@
 ﻿@model MathaCapital.Models.BidBatchViewModel
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Win Results";
 }
 
 <h2>Win Results</h2>
@@ -17,11 +17,7 @@
             <select class="form-control" asp-for="bankName" asp-items="Model.banks">
                 <option value="">All</option>
             </select>
-            <label class="form-inline" for="sortby">   Sort By:</label>
-            <select class="form-control" asp-for="sortOrder">
-                <option value="sortByDate">Show Results by Dates</option>
-                <option value="sortByBank">Show Results by Bank</option>
-            </select>
+            &nbsp;
             <button type="submit" class="btn btn-primary">Search</button>&nbsp;
         </form>
     </div>
