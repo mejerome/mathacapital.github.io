@@ -20,7 +20,7 @@ namespace MathaCapital.Controllers
         }
 
         // GET: WinResults
-        public async Task<IActionResult> Index(string bidBatch, string sortOrder, string bankName)
+        public async Task<IActionResult> Index(string bidBatch, string sortOrder, string bankName, string fwdDate)
         {
             IQueryable<string> batchQuery = from b in _context.AuctionBids
                                             orderby b.BatchRef
@@ -40,6 +40,11 @@ namespace MathaCapital.Controllers
             if (!String.IsNullOrEmpty(bankName))
             {
                 wins = wins.Where(y => y.BankName == bankName);
+            }
+
+            if (!String.IsNullOrEmpty(fwdDate))
+            {
+                wins = wins.Where(z => z.FwdDate == Convert.ToDateTime(fwdDate));
             }
 
             switch (sortOrder)
