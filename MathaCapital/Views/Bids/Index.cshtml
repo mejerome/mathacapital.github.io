@@ -12,78 +12,83 @@
     </p>
     <div class="container">
         <form asp-controller="Bids" asp-action="Index" class="form-inline">
-            <label for="batch" class="form-inline">Batch Reference:</label>
+            <label for="batch" class="form-inline">Batch Ref:</label>
             <select class="form-control" asp-for="bidBatch" asp-items="Model.batches">
                 <option value="">All</option>
-            </select> |
+            </select>
             <label for="date" class="form-inline">&nbsp;Date:</label>
             <input type="date" name="fwdDate" max="3000-12-31"
-                   min="1000-01-01" class="form-control"> |
+                   min="1000-01-01" class="form-control">
             <label for="search" class="form-inline">&nbsp;Bank:</label>
             <input type="text" name="searchString" class="form-control" id="search" placeholder="Type Bank Name Here.." />
             &nbsp;
             <button type="submit" class="btn btn-primary">Search</button>
-            <button asp-action="RunAuction" class="btn">Run Auction</button>
+                <select class="form-control" asp-for="auctionType">
+                    <option value="bestrate">Best Rate</option>
+                    <option value="waverage">Weighted Averages</option>
+                </select>
+                <button asp-action="RunAuction" class="btn">Run Auction</button>
         </form>
     </div>
 </div>
 <table class="table table-striped">
     <thead>
         <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.bids[0].FwdDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.bids[0].BankName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.bids[0].FwdRate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.bids[0].AmountBid)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.bids[0].CouponAmount)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.bids[0].Pips)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.bids[0].BatchRef)
-                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.bids[0].FwdDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.bids[0].BankName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.bids[0].FwdRate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.bids[0].AmountBid)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.bids[0].CouponAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.bids[0].Pips)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.bids[0].BatchRef)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.bids) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FwdDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BankName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FwdRate)
-            </td>
-            <td class="text-right">
-                @Html.DisplayFor(modelItem => item.AmountBid)
-            </td>
-            <td class="text-right">
-                @Html.DisplayFor(modelItem => item.CouponAmount)
-            </td>
-            <td class="text-right">
-                @Html.DisplayFor(modelItem => item.Pips)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BatchRef)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.bids)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FwdDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BankName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FwdRate)
+                </td>
+                <td class="text-right">
+                    @Html.DisplayFor(modelItem => item.AmountBid)
+                </td>
+                <td class="text-right">
+                    @Html.DisplayFor(modelItem => item.CouponAmount)
+                </td>
+                <td class="text-right">
+                    @Html.DisplayFor(modelItem => item.Pips)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BatchRef)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

@@ -12,5 +12,6 @@ namespace MathaCapital.Models
         public string bidBatch { get; set; }
         public string sortOrder { get; set; }
         public string bankName { get; set; }
+        public string auctionType { get; set; }
             }
 }

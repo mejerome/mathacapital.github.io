@@ -32,8 +32,9 @@ namespace MathaCapital.Controllers
         }
 
         // Run Auction for a Batch
-        public async Task<IActionResult> RunAuction(string bidBatch)
+        public async Task<IActionResult> RunAuction(string bidBatch, string auctionType)
         {
+
             //Get a list of dates in this Batch
             List<DateTime> res = (from a in _context.AuctionBids
                                   where a.BatchRef.ToString() == bidBatch
@@ -43,46 +44,94 @@ namespace MathaCapital.Controllers
             // Delete wins before running auction again
             _context.WinResults.Where(w => w.BatchRef == bidBatch).ToList().ForEach(p => _context.WinResults.Remove(p));
 
-
-            foreach (var date in res)
+            if (auctionType == "bestrate")
             {
-                // Direct SQL to pick winners for a date
-                string connectionString = "Server=JEROME-SBOOK\\SQLEXPRESS01;Database=MathaRx;Trusted_Connection=True;MultipleActiveResultSets=true;";
-                string sqlQry = "select ID, FwdDate, CouponAmount, BankName, AmountBid, FwdRate, BatchRef, case when remainder < 0 then remainder_1 else " +
-                    "AmountBid end awarded_amount from (select *, LAG(remainder) over(order by FwdRate desc) remainder_1 " +
-                    "from (select ID, FwdDate, CouponAmount, BankName, AmountBid, FwdRate, BatchRef, SUM(AmountBid) over (order by FwdRate desc) rtotal, " +
-                    "CouponAmount - SUM(AmountBid) over (order by FwdRate desc) as remainder from AuctionBid where FwdDate=@fwdDate and BatchRef=@batchRef) tb) a where case when remainder < 0 then remainder_1 else AmountBid end >= 0";
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                foreach (var date in res)
                 {
-                    using (SqlCommand comm = new SqlCommand(null, conn))
+                    // Direct SQL to pick winners for a date
+                    string connectionString = "Server=JEROME-SBOOK\\SQLEXPRESS01;Database=MathaRx;Trusted_Connection=True;MultipleActiveResultSets=true;";
+                    string sqlQry = "select ID, FwdDate, CouponAmount, BankName, AmountBid, FwdRate, BatchRef, case when remainder < 0 then remainder_1 else " +
+                        "AmountBid end awarded_amount from (select *, LAG(remainder) over(order by FwdRate desc) remainder_1 " +
+                        "from (select ID, FwdDate, CouponAmount, BankName, AmountBid, FwdRate, BatchRef, SUM(AmountBid) over (order by FwdRate desc) rtotal, " +
+                        "CouponAmount - SUM(AmountBid) over (order by FwdRate desc) as remainder from AuctionBid where FwdDate=@fwdDate and BatchRef=@batchRef) tb) a where case when remainder < 0 then remainder_1 else AmountBid end >= 0";
+                    using (SqlConnection conn = new SqlConnection(connectionString))
                     {
-                        conn.Open();
-                        comm.CommandText = sqlQry;
-                        SqlParameter param1 = comm.Parameters.Add("@fwdDate", SqlDbType.DateTime2, 8);
-                        SqlParameter param2 = comm.Parameters.Add("@batchRef", SqlDbType.NVarChar, 100);
-
-                        param1.Value = date;
-                        param2.Value = bidBatch;
-
-                        comm.Prepare();
-                        SqlDataReader reader = comm.ExecuteReader();
-                        DataTable dt = new DataTable();
-
-                        dt.Load(reader);
-                        conn.Close();
-
-                        // Convert Date wins to object and write to entity
-                        foreach (DataRow row in dt.Rows)
+                        using (SqlCommand comm = new SqlCommand(null, conn))
                         {
-                            WinResults convertedObject = ConvertRowToWinResult(row);
+                            conn.Open();
+                            comm.CommandText = sqlQry;
+                            SqlParameter param1 = comm.Parameters.Add("@fwdDate", SqlDbType.DateTime2, 8);
+                            SqlParameter param2 = comm.Parameters.Add("@batchRef", SqlDbType.NVarChar, 100);
 
-                            if (convertedObject.WinAmount != 0)
+                            param1.Value = date;
+                            param2.Value = bidBatch;
+
+                            comm.Prepare();
+                            SqlDataReader reader = comm.ExecuteReader();
+                            DataTable dt = new DataTable();
+
+                            dt.Load(reader);
+                            conn.Close();
+
+                            // Convert Date wins to object and write to entity
+                            foreach (DataRow row in dt.Rows)
                             {
-                                _context.WinResults.Add(convertedObject);
+                                WinResults convertedObject = ConvertRowToWinResult(row);
+                                if (convertedObject.WinAmount != 0)
+                                {
+                                    _context.WinResults.Add(convertedObject);
+                                }
                             }
+                            await _context.SaveChangesAsync();
                         }
-                        await _context.SaveChangesAsync();
                     }
+                }
+            }
+            else if (auctionType == "waverage")
+            {
+                foreach (var date in res)
+                {
+                    IQueryable<AuctionBid> bids = from j in _context.AuctionBids
+                                                  where j.FwdDate == date
+                                                  select j;
+                    var totalAmt = bids.Select(x => x.AmountBid).Sum();
+                    var bidArray = bids.ToArray();
+
+                    DataTable dTable = new DataTable();
+                    dTable.Columns.Add("ID", typeof(int));
+                    dTable.Columns.Add("FwdDate", typeof(DateTime));
+                    dTable.Columns.Add("CouponAmount", typeof(decimal));
+                    dTable.Columns.Add("BankName", typeof(string));
+                    dTable.Columns.Add("AmountBid", typeof(decimal));
+                    dTable.Columns.Add("FwdRate", typeof(double));
+                    dTable.Columns.Add("awarded_amount", typeof(decimal));
+                    dTable.Columns.Add("BatchRef", typeof(string));
+
+                    foreach (var row in bids)
+                    {
+                        DataRow dRow = dTable.NewRow();
+                        dRow[0] = row.ID;
+                        dRow[1] = row.FwdDate;
+                        dRow[2] = row.CouponAmount;
+                        dRow[3] = row.BankName;
+                        dRow[4] = row.AmountBid;
+                        dRow[5] = row.FwdRate;
+                        dRow[6] = row.AmountBid / totalAmt * row.CouponAmount;
+                        dRow[7] = row.BatchRef;
+
+                        dTable.Rows.Add(dRow);
+                    }
+
+                    // Convert Date wins to object and write to entity
+                    foreach (DataRow row in dTable.Rows)
+                    {
+                        WinResults convertedObject = ConvertRowToWinResult(row);
+                        if (convertedObject.WinAmount != 0)
+                        {
+                            _context.WinResults.Add(convertedObject);
+                        }
+                    }
+                    await _context.SaveChangesAsync();
                 }
             }
             return RedirectToAction("Index", "WinResults");
@@ -259,12 +308,5 @@ namespace MathaCapital.Controllers
         {
             return _context.AuctionBids.Any(e => e.ID == id);
         }
-
-
-
-
     }
-
-
 }
-
