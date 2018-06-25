@@ -114,7 +114,7 @@ namespace MathaCapital.Controllers
                                   select a.FwdDate).Distinct().ToList();
 
             // Delete wins before running auction again
-            _context.WinResults.Where(w => w.BatchRef == bidBatch).ToList().ForEach(p => _context.WinResults.Remove(p));
+            _context.WinResults.Where(x => x.BatchRef == bidBatch).ForEach(p => _context.WinResults.Remove(p));
 
             if (auctionType == "bestrate")
             {
