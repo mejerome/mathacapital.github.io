@@ -1,0 +1,62 @@
+﻿@model MathaCapital.Models.BankPercViewModel
+
+@{
+    ViewData["Title"] = "RunAuction";
+}
+
+<h2>RunAuction</h2>
+
+<h4>
+    Banks for Auction with Batch Reference "@Model.bidBatch"
+</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+
+
+        @using (Html.BeginForm("PerAuctionRun", "Bids", FormMethod.Post))
+        {
+            <table class="table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                         Bank Name
+                        </th>
+                        <th>
+                          Percentage
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int i = 0;
+                        @foreach (var item in Model.perbank.ToList())
+                        {
+                            <tr>
+                                @Html.HiddenFor(u =>u.perbank[i].ID)
+                                <td>
+                                    @Html.DisplayFor(modelItem =>modelItem.perbank[i].BankName)
+                                    @Html.HiddenFor(m => m.perbank[i].BankName)
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(modelItem => modelItem.perbank[i].Percent)
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                </tbody>
+            </table><br />
+            <div class="form-group">
+                @Html.HiddenFor(m => m.bidBatch)
+                <input type="submit" value="Run Auction" class="btn btn-primary" />
+            </div>
+
+        }
+    </div>
+</div>
+
+@*<div>
+    <a asp-action="Index">Back to List</a>
+</div>*@
+

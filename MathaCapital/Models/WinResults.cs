@@ -16,7 +16,7 @@ namespace MathaCapital.Models
 
         [Display(Name = "Bank Name")]
         public string BankName { get; set; }
-        public AuctionBid AuctionBid { get; set; }
+        public String AuctionBid { get; set; }
         public int AuctionBidID { get; set; }
         [Display(Name = "Forward Rate")]
         public double FwdRate { get; set; }

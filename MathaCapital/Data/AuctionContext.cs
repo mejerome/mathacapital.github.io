@@ -19,6 +19,10 @@ namespace MathaCapital.Data
             modelBuilder.Entity<WinResults>().ToTable("WinResult");
         }
 
+        public DbSet<MathaCapital.Models.BankPercent> BankPercent { get; set; }
+
+        public DbSet<MathaCapital.Models.BankPercViewModel> BankPercViewModel { get; set; }
+
 
      }
 

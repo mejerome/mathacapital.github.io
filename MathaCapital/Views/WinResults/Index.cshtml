@@ -22,6 +22,7 @@
             <input type="date" name="fwdDate" max="3000-12-31"
                    min="2010-01-01" class="form-control">
             <button type="submit" class="btn btn-primary">Search</button>&nbsp;
+            <button type="submit" asp-action="ExportWinData" class="btn btn-default" >Export to Excel</button>
         </form>
     </div>
 </div>
@@ -29,7 +30,7 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>
+            <th class="col-lg-2">
                 @Html.DisplayNameFor(model => model.wins[0].FwdDate)
             </th>
             <th>
@@ -86,10 +87,10 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.AuctionBidID)
                 </td>
-                <td>
+                @*<td>
                     <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.ID">Details</a>
-                </td>
+                </td>*@
             </tr>
         }
     </tbody>

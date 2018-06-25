@@ -18,7 +18,7 @@
             </select>
             <label for="date" class="form-inline">&nbsp;Date:</label>
             <input type="date" name="fwdDate" max="3000-12-31"
-                   min="1000-01-01" class="form-control">
+                   min="2010-01-01" class="form-control">
             <label for="search" class="form-inline">&nbsp;Bank:</label>
             <input type="text" name="searchString" class="form-control" id="search" placeholder="Type Bank Name Here.." />
             &nbsp;
@@ -26,6 +26,7 @@
                 <select class="form-control" asp-for="auctionType">
                     <option value="bestrate">Best Rate</option>
                     <option value="waverage">Weighted Averages</option>
+                    <option value="percentage">Percentages</option>
                 </select>
                 <button asp-action="RunAuction" class="btn">Run Auction</button>
         </form>

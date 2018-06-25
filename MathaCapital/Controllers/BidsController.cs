@@ -25,10 +25,82 @@ namespace MathaCapital.Controllers
             _context = db;
         }
 
-
         protected override void Dispose(bool disposing)
         {
             _context.Dispose();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PerAuctionRun(BankPercViewModel data)
+        {
+            var testTotal = new Double();
+            foreach (var item in data.perbank)
+            {
+                testTotal += Convert.ToDouble(item.Percent);
+            }
+            //Get a list of dates in this Batch
+            List<DateTime> res = (from a in _context.AuctionBids
+                                  where a.BatchRef.ToString() == data.bidBatch
+                                  orderby a.FwdDate
+                                  select a.FwdDate).Distinct().ToList();
+            // Delete wins before running auction again
+            _context.WinResults.Where(w => w.BatchRef == data.bidBatch).ToList().ForEach(p => _context.WinResults.Remove(p));
+
+            if (testTotal == 100)
+            {
+                foreach (var date in res)
+                {
+                    IQueryable<AuctionBid> bids = from j in _context.AuctionBids
+                                                     where j.FwdDate == date
+                                                     select j;
+                    DataTable dTable = new DataTable();
+                    dTable.Columns.Add("ID", typeof(int));
+                    dTable.Columns.Add("FwdDate", typeof(DateTime));
+                    dTable.Columns.Add("CouponAmount", typeof(decimal));
+                    dTable.Columns.Add("BankName", typeof(string));
+                    dTable.Columns.Add("AmountBid", typeof(decimal));
+                    dTable.Columns.Add("FwdRate", typeof(double));
+                    dTable.Columns.Add("awarded_amount", typeof(decimal));
+                    dTable.Columns.Add("BatchRef", typeof(string));
+                    foreach (var row in bids)
+                    {
+                        Decimal ratio = new Decimal();
+                            
+                        ratio = Convert.ToDecimal(data.perbank.Where(x => x.BankName == row.BankName).Select(x => x.Percent).First());
+
+                        DataRow dRow = dTable.NewRow();
+                        dRow[0] = row.ID;
+                        dRow[1] = row.FwdDate;
+                        dRow[2] = row.CouponAmount;
+                        dRow[3] = row.BankName;
+                        dRow[4] = row.AmountBid;
+                        dRow[5] = row.FwdRate;
+                        dRow[6] = row.CouponAmount * ratio/100;
+                        dRow[7] = row.BatchRef;
+
+                        dTable.Rows.Add(dRow);
+                    }
+
+                    // Convert Date wins to object and write to entity
+                    foreach (DataRow row in dTable.Rows)
+                    {
+                        WinResults convertedObject = ConvertRowToWinResult(row);
+                        if (convertedObject.WinAmount != 0)
+                        {
+                            _context.WinResults.Add(convertedObject);
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+                }
+                return RedirectToAction("Index", "WinResults");
+            }
+            else
+            {
+                ViewData["Message"] = "The total of the percentages is more or less than 100.";
+                return View();
+            }
+
+
         }
 
         // Run Auction for a Batch
@@ -92,8 +164,8 @@ namespace MathaCapital.Controllers
                 foreach (var date in res)
                 {
                     IQueryable<AuctionBid> bids = from j in _context.AuctionBids
-                                                  where j.FwdDate == date
-                                                  select j;
+                                                     where j.FwdDate == date
+                                                     select j;
                     var totalAmt = bids.Select(x => x.AmountBid).Sum();
                     var bidArray = bids.ToArray();
 
@@ -134,6 +206,25 @@ namespace MathaCapital.Controllers
                     await _context.SaveChangesAsync();
                 }
             }
+            else if (auctionType == "percentage")
+            {
+                List<string> banks = (from d in _context.AuctionBids
+                                      select d.BankName).Distinct().ToList();
+
+                var bankQ = _context.AuctionBids.Select(u => u.BankName).Distinct().ToList();
+
+                BankPercViewModel bankVM = new BankPercViewModel();
+                bankVM.ID = 1;
+                foreach (var item in bankQ)
+                {
+                    bankVM.perbank.Add(new BankPercent { BankName = item, Percent = "", ID = 1 });
+                }
+
+                bankVM.bidBatch = bidBatch;
+
+
+                return View(bankVM);
+            }
             return RedirectToAction("Index", "WinResults");
         }
 
@@ -158,29 +249,38 @@ namespace MathaCapital.Controllers
         // GET: Bids
         public async Task<IActionResult> Index(string searchString, string fwdDate, string bidBatch)
         {
-            IQueryable<string> batchQuery = from b in _context.AuctionBids
-                                            orderby b.BatchRef
-                                            select b.BatchRef;
+            //IQueryable<string> batchQuery = from b in _context.AuctionBids
+            //                                orderby b.BatchRef
+            //                                select b.BatchRef;
 
-            var bids = from m in _context.AuctionBids
-                       select m;
-            if (!String.IsNullOrEmpty(searchString))
+            var batchQ = _context.AuctionBids.OrderBy(u => u.BatchRef).Select(u => u.BatchRef);
+
+            //var bids = from m in _context.AuctionBids
+            //           select m;
+
+            var bidQ = _context.AuctionBids.Select(u => u);
+            if (!string.IsNullOrEmpty(searchString))
             {
-                bids = bids.Where(s => s.BankName.Contains(searchString));
+                // bids = bids.Where(s => s.BankName.Contains(searchString));
+                bidQ = bidQ.Where(u => u.BankName.Contains(searchString));
             }
 
-            if (!String.IsNullOrEmpty(bidBatch))
+            if (!string.IsNullOrEmpty(bidBatch))
             {
-                bids = bids.Where(x => x.BatchRef == bidBatch);
+                // bids = bids.Where(x => x.BatchRef == bidBatch);
+                bidQ = bidQ.Where(u => u.BatchRef == bidBatch);
             }
 
-            if (!String.IsNullOrEmpty(fwdDate))
+            if (!string.IsNullOrEmpty(fwdDate))
             {
-                bids = bids.Where(x => x.FwdDate == Convert.ToDateTime(fwdDate));
+                //bids = bids.Where(x => x.FwdDate == Convert.ToDateTime(fwdDate));
+                bidQ = bidQ.Where(u => u.FwdDate == Convert.ToDateTime(fwdDate));
             }
             var bidVM = new BidBatchViewModel();
-            bidVM.batches = new SelectList(await batchQuery.Distinct().ToListAsync());
-            bidVM.bids = await bids.OrderBy(b => b.FwdDate).ThenByDescending(b => b.FwdRate).ToListAsync();
+            // bidVM.batches = new SelectList(await batchQuery.Distinct().ToListAsync());
+            bidVM.batches = new SelectList(await batchQ.Distinct().ToListAsync());
+            // bidVM.bids = await bids.OrderBy(b => b.FwdDate).ThenByDescending(b => b.FwdRate).ToListAsync();
+            bidVM.bids = await bidQ.OrderBy(b => b.FwdDate).ThenByDescending(b => b.FwdRate).ToListAsync();
             return View(bidVM);
         }
 
