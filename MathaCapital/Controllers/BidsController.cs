@@ -65,9 +65,7 @@ namespace MathaCapital.Controllers
                     foreach (var row in bids)
                     {
                         Decimal ratio = new Decimal();
-                            
                         ratio = Convert.ToDecimal(data.perbank.Where(x => x.BankName == row.BankName).Select(x => x.Percent).First());
-
                         DataRow dRow = dTable.NewRow();
                         dRow[0] = row.ID;
                         dRow[1] = row.FwdDate;
@@ -99,8 +97,6 @@ namespace MathaCapital.Controllers
                 ViewData["Message"] = "The total of the percentages is more or less than 100.";
                 return View();
             }
-
-
         }
 
         // Run Auction for a Batch
