@@ -20,10 +20,10 @@
                 <thead>
                     <tr>
                         <th>
-                         Bank Name
+                            Bank Name
                         </th>
                         <th>
-                          Percentage
+                            Percentage
                         </th>
                     </tr>
                 </thead>
@@ -33,9 +33,9 @@
                         @foreach (var item in Model.perbank.ToList())
                         {
                             <tr>
-                                @Html.HiddenFor(u =>u.perbank[i].ID)
+                                @Html.HiddenFor(u => u.perbank[i].ID)
                                 <td>
-                                    @Html.DisplayFor(modelItem =>modelItem.perbank[i].BankName)
+                                    @Html.DisplayFor(modelItem => modelItem.perbank[i].BankName)
                                     @Html.HiddenFor(m => m.perbank[i].BankName)
                                 </td>
                                 <td>
@@ -46,17 +46,26 @@
                         }
                     }
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Total </td>
+                        <td><span id="sum">0</span></td>
+                    </tr>
+                </tfoot>
             </table><br />
             <div class="form-group">
                 @Html.HiddenFor(m => m.bidBatch)
                 <input type="submit" value="Run Auction" class="btn btn-primary" />
             </div>
-
         }
     </div>
+    <script type="text/javascript">
+
+
+    </script>
 </div>
 
 @*<div>
-    <a asp-action="Index">Back to List</a>
-</div>*@
+        <a asp-action="Index">Back to List</a>
+    </div>*@
 

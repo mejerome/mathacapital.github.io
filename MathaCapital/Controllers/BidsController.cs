@@ -12,22 +12,47 @@ using System.Data;
 using MoreLinq;
 using System.Data.SqlClient;
 using System.Globalization;
+using MathaCapital.Areas.Identity.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MathaCapital.Controllers
 {
+    [Authorize]
     public class BidsController : Controller
     {
         private readonly AuctionContext _context;
         private readonly IHostingEnvironment _hostingEnvironment;
-        public BidsController(IHostingEnvironment hostingEnvironment, AuctionContext db)
+        private readonly UserManager<MathaCapitalUser> _userManager;
+        private readonly string _connString;
+
+        public BidsController(IHostingEnvironment hostingEnvironment, AuctionContext db, UserManager<MathaCapitalUser> userManager)
         {
             _hostingEnvironment = hostingEnvironment;
             _context = db;
+            _userManager = userManager;
+            _connString = db.Database.GetDbConnection().ConnectionString;
         }
 
-        protected override void Dispose(bool disposing)
+        public async Task<IActionResult> DeleteBatch(string bidBatch)
         {
-            _context.Dispose();
+            var relWins = _context.WinResults.Where(x => x.BatchRef == bidBatch);
+            if (relWins.Count() == 0)
+            {
+                var deleteBatch = _context.AuctionBids.Where(x => x.BatchRef == bidBatch);
+                foreach (var item in deleteBatch)
+                {
+                    _context.AuctionBids.Remove(item);
+                }
+                await _context.SaveChangesAsync();
+                ViewData["Message"] = bidBatch + " has been deleted by " + _userManager.GetUserName(HttpContext.User) + ".";
+            }
+            else
+            {
+                ViewData["Message"] = bidBatch + " cannot be deleted because there are wins associated with it.";
+            }
+
+            return View();
         }
 
         [HttpPost]
@@ -38,13 +63,16 @@ namespace MathaCapital.Controllers
             {
                 testTotal += Convert.ToDouble(item.Percent);
             }
+            
             //Get a list of dates in this Batch
             List<DateTime> res = (from a in _context.AuctionBids
                                   where a.BatchRef.ToString() == data.bidBatch
                                   orderby a.FwdDate
                                   select a.FwdDate).Distinct().ToList();
+           
             // Delete wins before running auction again
             _context.WinResults.Where(w => w.BatchRef == data.bidBatch).ToList().ForEach(p => _context.WinResults.Remove(p));
+            await _context.SaveChangesAsync();
 
             if (testTotal == 100)
             {
@@ -62,6 +90,8 @@ namespace MathaCapital.Controllers
                     dTable.Columns.Add("FwdRate", typeof(double));
                     dTable.Columns.Add("awarded_amount", typeof(decimal));
                     dTable.Columns.Add("BatchRef", typeof(string));
+                    dTable.Columns.Add("UserName", typeof(string));
+
                     foreach (var row in bids)
                     {
                         Decimal ratio = new Decimal();
@@ -75,6 +105,7 @@ namespace MathaCapital.Controllers
                         dRow[5] = row.FwdRate;
                         dRow[6] = row.CouponAmount * ratio/100;
                         dRow[7] = row.BatchRef;
+                        dRow[8] = row.UserName;
 
                         dTable.Rows.Add(dRow);
                     }
@@ -117,12 +148,11 @@ namespace MathaCapital.Controllers
                 foreach (var date in res)
                 {
                     // Direct SQL to pick winners for a date
-                    string connectionString = "Server=JEROME-SBOOK\\SQLEXPRESS01;Database=MathaRx;Trusted_Connection=True;MultipleActiveResultSets=true;";
                     string sqlQry = "select ID, FwdDate, CouponAmount, BankName, AmountBid, FwdRate, BatchRef, case when remainder < 0 then remainder_1 else " +
                         "AmountBid end awarded_amount from (select *, LAG(remainder) over(order by FwdRate desc) remainder_1 " +
                         "from (select ID, FwdDate, CouponAmount, BankName, AmountBid, FwdRate, BatchRef, SUM(AmountBid) over (order by FwdRate desc) rtotal, " +
                         "CouponAmount - SUM(AmountBid) over (order by FwdRate desc) as remainder from AuctionBid where FwdDate=@fwdDate and BatchRef=@batchRef) tb) a where case when remainder < 0 then remainder_1 else AmountBid end >= 0";
-                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    using (SqlConnection conn = new SqlConnection(_connString))
                     {
                         using (SqlCommand comm = new SqlCommand(null, conn))
                         {
@@ -237,7 +267,7 @@ namespace MathaCapital.Controllers
             winResult.FwdRate = Convert.ToDouble(dr["FwdRate"]);
             winResult.WinAmount = Convert.ToDecimal(dr["awarded_amount"]);
             winResult.BatchRef = Convert.ToString(dr["BatchRef"]);
-
+            winResult.UserName = _userManager.GetUserName(HttpContext.User);
             return winResult;
         }
 

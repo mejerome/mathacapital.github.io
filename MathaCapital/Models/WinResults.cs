@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using MathaCapital.Areas.Identity.Data;
 
 namespace MathaCapital.Models
 {
@@ -23,19 +25,24 @@ namespace MathaCapital.Models
         public double FwdRate { get; set; }
 
         [Display(Name = "Amount Bid")]
+        [Column(TypeName = "decimal(18,2)")]
         [DisplayFormat(DataFormatString = "{0:0,0.00}")]
         public decimal AmountBid { get; set; }
 
         [Display(Name = "Coupon Amount")]
+        [Column(TypeName = "decimal(18,2)")]
         [DisplayFormat(DataFormatString = "{0:0,0.00}")]
         public decimal CouponAmount { get; set; }
 
         [Display(Name = "Win Amount")]
+        [Column(TypeName = "decimal(18,2)")]
         [DisplayFormat(DataFormatString = "{0:0,0.00}")]
         public decimal WinAmount { get; set; }
 
         public string BatchRef { get; set; }
 
+        public string UserName { get; set; }
+        public MathaCapitalUser User { get; set; }
     }
 
 }

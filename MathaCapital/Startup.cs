@@ -25,6 +25,7 @@ namespace MathaCapital
             services.AddSingleton<IConfiguration>(Configuration);
 
             services.AddMvc();
+            services.AddAntiforgery(options => options.HeaderName = "XSRF-TOKEN");
 
         }
 
@@ -43,7 +44,7 @@ namespace MathaCapital
             }
 
             app.UseStaticFiles();
-
+            app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

@@ -1,25 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
-using MathaCapital.Data;
-using MathaCapital.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
+using MathaCapital.Areas.Identity.Data;
+using MathaCapital.Data;
+using MathaCapital.Models;
 
-namespace MathaCapital.Controllers
+
+namespace MathaRx.Controllers
 {
+    [Authorize]
     public class ImportController : Controller
     {
         private readonly AuctionContext _context;
         private readonly IHostingEnvironment _hostingEnvironment;
-        public ImportController(IHostingEnvironment hostingEnvironment, AuctionContext db)
+        private readonly UserManager<MathaCapitalUser> _userManager;
+
+        public int lineCount;
+        public string lineMessage;
+
+        public ImportController(IHostingEnvironment hostingEnvironment, AuctionContext db, UserManager<MathaCapitalUser> userManager)
         {
             _hostingEnvironment = hostingEnvironment;
             _context = db;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -27,41 +37,42 @@ namespace MathaCapital.Controllers
             return View();
         }
 
+        protected void ImportExcel(object sender, EventArgs e)
+        {
+        }
+
         [HttpPost]
-        public async Task<ActionResult> UploadExcel(IFormFile file)
+        [Authorize]
+        public async Task<ActionResult> UploadExcel(IFormFile file, string batchPre)
         {
             if (file == null || file.Length < 0)
             {
                 return Content("file not selected.");
             }
-            string message = string.Empty;
-            int count = 0;
             await UploadFile(file);
-            ImportData(out count);
-            ViewData["Error"] = lineMessage.ToString();
+
+            await ImportDataAsync(batchPre);
+            ViewData["Error"] = lineMessage;
             ViewData["Message"] = lineCount + " Lines have been successfuly imported into the database.";
             return View();
         }
 
-        public int lineCount;
-        public string lineMessage;
-        private bool ImportData(out int count)
+
+        private async Task<bool> ImportDataAsync(string batchPre)
         {
-            var result = false;
-            count = 0;
+            bool result = false;
             string folderName = "import";
             string rootFolder = _hostingEnvironment.WebRootPath;
             string newPath = Path.Combine(rootFolder, folderName);
             string[] file = Directory.GetFiles(newPath, "*.xlsx");
             string fullPath = Path.Combine(newPath, file[0]);
             FileInfo fileInfo = new FileInfo(fullPath);
-            string batchRef = DateTime.Now.ToString("yyyyMMddHHmmss");
-            
+            string batchRef = DateTime.Now.ToString("ddMMyyyy-HHmm");
+
             try
             {
                 using (ExcelPackage package = new ExcelPackage(fileInfo))
                 {
-                    DeleteFiles();
                     ExcelWorksheet workSheet = package.Workbook.Worksheets[1];
                     int totalRows = workSheet.Dimension.Rows;
                     List<AuctionBid> auctionBids = new List<AuctionBid>();
@@ -80,18 +91,19 @@ namespace MathaCapital.Controllers
                                 AmountBid = decimal.Parse(workSheet.Cells[i, 4].Value.ToString()),
                                 CouponAmount = decimal.Parse(workSheet.Cells[i, 2].Value.ToString()),
                                 Pips = decimal.Parse(workSheet.Cells[i, 6].Value.ToString()),
-                                BatchRef = batchRef
+                                BatchRef = batchRef,
+                                UserName = _userManager.GetUserName(HttpContext.User)
                             });
                             lineCount++;
+                            DeleteFiles();
                         }
                         catch (Exception e)
                         {
-                            lineMessage  = e.Message;
+                            lineMessage = e.Message.ToString();
                         }
                     }
-                    _context.AuctionBids.AddRangeAsync(auctionBids);
+                    await _context.AuctionBids.AddRangeAsync(auctionBids);
                     _context.SaveChanges();
-                    count++;
                 }
             }
             catch (Exception ex)
@@ -107,16 +119,16 @@ namespace MathaCapital.Controllers
             {
                 return Content("file not selected.");
             }
-            string fileName = file.FileName;
+            string fileName = @"importedfile.xlsx";
             string folderName = "import";
             string rootFolder = _hostingEnvironment.WebRootPath;
             string newPath = Path.Combine(rootFolder, folderName);
             string path = Path.Combine(newPath, fileName);
             using (var stream = new FileStream(path, FileMode.Create))
             {
-                await file.CopyToAsync(stream);
+               await file.CopyToAsync(stream);
             }
-                return Ok();
+            return Ok();
         }
 
         public ActionResult DeleteFiles()

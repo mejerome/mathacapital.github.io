@@ -11,6 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20180730102730_AddUserName.cs" />
+    <Compile Remove="Migrations\20180730102730_AddUserName.Designer.cs" />
+    <Compile Remove="Migrations\20180730103907_AddUserName.cs" />
+    <Compile Remove="Migrations\20180730103907_AddUserName.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.0" />
     <PackageReference Include="EPPlus.Core" Version="1.5.4" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.2" />
@@ -27,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\import\" />
+    <Folder Include="Areas\Identity\Services\" />
   </ItemGroup>
 
 </Project>
