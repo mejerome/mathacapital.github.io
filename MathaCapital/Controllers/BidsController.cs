@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Data;
 using MoreLinq;
 using System.Data.SqlClient;
-using System.Globalization;
 using MathaCapital.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
