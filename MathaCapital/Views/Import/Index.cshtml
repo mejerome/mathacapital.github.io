@@ -11,27 +11,27 @@
 </div>
 
 <div class="container">
-
+    <script type="text/javascript">
+        function validate(fld) {
+            if (!/(\.xlsx)$/i.test(fld.value)) {
+                alert("Invalide file type!");
+                fld.form.reset();
+                fld.focus();
+                return false;
+            }
+            return true;
+        }
+    </script>
     <div class="col-md-6">
-        <form asp-controller="Import" asp-action="UploadExcel" method="post" enctype="multipart/form-data">
+        <form asp-controller="Import" asp-action="UploadExcel" method="post" enctype="multipart/form-data" onsubmit="validate(this.file)">
             <div class="form-group">
-                <input type="file" name="file" class="form-control" id="fileUpload" />
-                <input type="submit" onclick="return validate();" value="Import"/>
+                <input type="file" name="file" class="form-control" onchange="return validate(this);" /><br />
+                <input class="btn btn-primary" type="submit" value="Import" />
             </div>
         </form>
     </div>
 
     <p class="alert-success">@ViewData["Message"]</p>
 
-    <script type="text/javascript">
-        function validate() {
-            var file = form.file.value;
-            var reg = /(.*?)\.(xlsx)$/;
-            if (!file.match(reg) {
-                alert("Invalide file type! Only import .xlsx files");
-                return false;
-            }
 
-        }
-    </script>
 </div>
