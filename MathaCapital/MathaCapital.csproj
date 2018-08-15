@@ -20,6 +20,7 @@
   <ItemGroup>
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.0" />
     <PackageReference Include="EPPlus.Core" Version="1.5.4" />
+    <PackageReference Include="jQuery" Version="3.3.1" />
     <PackageReference Include="jquery.datatables" Version="1.10.15" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
@@ -36,6 +37,23 @@
 
   <ItemGroup>
     <Folder Include="Areas\Identity\Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\lib\DataTables\DataTables-1.10.18\js\dataTables.bootstrap.js" />
+    <None Include="wwwroot\lib\DataTables\DataTables-1.10.18\js\dataTables.bootstrap.min.js" />
+    <None Include="wwwroot\lib\DataTables\DataTables-1.10.18\js\dataTables.bootstrap4.js" />
+    <None Include="wwwroot\lib\DataTables\DataTables-1.10.18\js\dataTables.bootstrap4.min.js" />
+    <None Include="wwwroot\lib\DataTables\DataTables-1.10.18\js\dataTables.foundation.js" />
+    <None Include="wwwroot\lib\DataTables\DataTables-1.10.18\js\dataTables.foundation.min.js" />
+    <None Include="wwwroot\lib\DataTables\DataTables-1.10.18\js\dataTables.jqueryui.js" />
+    <None Include="wwwroot\lib\DataTables\DataTables-1.10.18\js\dataTables.jqueryui.min.js" />
+    <None Include="wwwroot\lib\DataTables\DataTables-1.10.18\js\dataTables.semanticui.js" />
+    <None Include="wwwroot\lib\DataTables\DataTables-1.10.18\js\dataTables.semanticui.min.js" />
+    <None Include="wwwroot\lib\DataTables\DataTables-1.10.18\js\jquery.dataTables.js" />
+    <None Include="wwwroot\lib\DataTables\DataTables-1.10.18\js\jquery.dataTables.min.js" />
+    <None Include="wwwroot\lib\DataTables\datatables.js" />
+    <None Include="wwwroot\lib\DataTables\datatables.min.js" />
   </ItemGroup>
 
 </Project>

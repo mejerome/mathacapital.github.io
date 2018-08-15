@@ -26,6 +26,11 @@ namespace MathaCapital.Controllers
             return View();
         }
 
+        public IActionResult BidList()
+        {
+            return View();
+        }
+
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

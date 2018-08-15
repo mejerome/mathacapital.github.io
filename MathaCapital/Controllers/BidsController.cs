@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MathaCapital.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class BidsController : Controller
     {
         private readonly AuctionContext _context;
@@ -32,6 +32,7 @@ namespace MathaCapital.Controllers
             _userManager = userManager;
             _connString = db.Database.GetDbConnection().ConnectionString;
         }
+
 
         public async Task<IActionResult> DeleteBatch(string bidBatch)
         {
